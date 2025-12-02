@@ -1,0 +1,106 @@
+/* Panneau principal flottant */
+#mr-helper-panel {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    width: 280px;
+    background: #1f1f1f;
+    border: 1px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    z-index: 9999;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+    color: #e0e0e0;
+    overflow: hidden;
+}
+/* État minimisé (petite bulle) */
+#mr-helper-panel.minimized {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid #1f75cb;
+}
+/* En-tête du panneau (zone cliquable pour réduire) */
+#mr-helper-header {
+    background: #292929;
+    padding: 10px 15px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #444;
+    cursor: pointer;
+    color: #fff;
+}
+/* Styles spécifiques quand minimisé */
+#mr-helper-panel.minimized #mr-helper-header {
+    padding: 0;
+    justify-content: center;
+    height: 100%;
+    border: none;
+    background: #1f75cb;
+    color: white;
+}
+#mr-helper-panel.minimized .header-text,
+#mr-helper-panel.minimized .toggle-icon {
+    display: none;
+}
+/* Icône baguette magique quand minimisé */
+#mr-helper-panel.minimized::after {
+    content: '🪄';
+    font-size: 20px;
+    line-height: 40px;
+}
+/* Contenu du panneau */
+#mr-helper-content {
+    padding: 15px;
+}
+/* Groupe de boutons radio */
+.mr-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.mr-radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #ccc;
+}
+.mr-radio-label:hover {
+    color: #fff;
+}
+.mr-radio-label input {
+    margin-right: 8px;
+    accent-color: #1f75cb;
+}
+/* Bouton d'action principal */
+.mr-action-btn {
+    width: 100%;
+    padding: 8px;
+    background-color: #1f75cb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.mr-action-btn:hover {
+    background-color: #2980b9;
+}
+/* Checkbox optionnelle */
+.mr-checkbox-label {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #aaa;
+    cursor: pointer;
+}
+.mr-checkbox-label input {
+    margin-right: 5px;
+}

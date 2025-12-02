@@ -1,1 +1,0 @@
-# laitquipe-extension
