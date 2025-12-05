@@ -92,6 +92,13 @@ if [ $RET_VAL -eq 0 ]; then
     echo "------------------------------------------------"
     echo "📦 Préparation de la release GitHub..."
 
+    # Création du ZIP pour Chrome (basé sur le dossier de build propre)
+    # Création du ZIP pour Chrome (basé sur le dossier de build propre)
+    # On le crée dans /tmp pour ne pas polluer le dossier courant
+    CHROME_ZIP="/tmp/laitquipe-chrome-v$NEW_VERSION.zip"
+    echo "📦 Création du ZIP pour Chrome : $CHROME_ZIP..."
+    (cd "$DOSSIER_BUILD" && zip -r "$CHROME_ZIP" .)
+    
     # Trouver le fichier .xpi généré (le plus récent dans web-ext-artifacts)
     XPI_FILE=$(ls -t web-ext-artifacts/*.xpi | head -n 1)
     XPI_FILENAME=$(basename "$XPI_FILE")
@@ -149,7 +156,7 @@ if [ $RET_VAL -eq 0 ]; then
     
     # Création de la release GitHub
     echo "🚀 Création de la release GitHub v$NEW_VERSION..."
-    gh release create "v$NEW_VERSION" "$XPI_FILE" \
+    gh release create "v$NEW_VERSION" "$XPI_FILE" "$CHROME_ZIP" \
        --title "Version $NEW_VERSION" \
        --notes "Release automatique version $NEW_VERSION" \
        --repo "keryanchpn/laitquipe-extension-releases"
@@ -162,6 +169,9 @@ if [ $RET_VAL -eq 0 ]; then
 
     # Nettoyage final
     rm -rf "$DOSSIER_BUILD"
+    # Le ZIP est dans /tmp, on peut le laisser ou le supprimer. 
+    # On le supprime pour être propre.
+    rm "$CHROME_ZIP"
 else
     echo "❌ ERREUR : L'envoi a échoué. Vérifiez les logs ci-dessus."
 fi
