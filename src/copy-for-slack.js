@@ -179,16 +179,16 @@
             item.style.padding = '6px 10px';
             item.style.cursor = 'pointer';
             item.style.fontSize = '13px';
-            item.style.color = '#e0e0e0'; // Dark mode text
-            item.style.background = '#222'; // Dark mode bg
+            // item.className = 'gl-bg-subtle';
+            item.style.background = 'var(--gl-button-default-primary-background-color-default)';
 
             if (index < mentions.length - 1) {
                 item.style.borderBottom = '1px solid #444'; // Dark mode separator
             }
 
             // Hover effect
-            item.onmouseenter = () => item.style.background = '#444';
-            item.onmouseleave = () => item.style.background = '#222';
+            item.onmouseenter = () => item.style.background = 'var(--gl-button-default-primary-background-color-hover)';
+            item.onmouseleave = () => item.style.background = 'var(--gl-button-default-primary-background-color-default)';
 
             // Empêcher la perte de focus de l'input lors du clic
             item.onmousedown = (e) => {
@@ -285,16 +285,12 @@
         input.id = 'mr-copy-mention-input';
         input.type = 'text';
         input.placeholder = '@who?';
-        input.className = 'form-control gl-form-input';
-        input.style.width = '200px';
-        input.style.height = '32px';
-        input.style.fontSize = '13px';
-        input.style.background = '#222';
-        input.style.color = '#e0e0e0';
-        input.style.border = '1px solid #555';
+        input.className = 'form-control gl-form-input markdown-area';
+        input.style.minHeight = 'unset';
 
         // LISTE HISTORIQUE
         const historyList = document.createElement('div');
+        historyList.className = 'gl-bg-subtle';
         historyList.id = 'mr-copy-mention-list';
         historyList.style.display = 'none';
         historyList.style.position = 'absolute';
@@ -302,7 +298,6 @@
         historyList.style.left = '0';
         historyList.style.width = '100%';
         historyList.style.zIndex = '9999';
-        historyList.style.background = '#222';
         historyList.style.border = '1px solid #555';
         historyList.style.borderRadius = '0 0 4px 4px';
         historyList.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';

@@ -15,8 +15,10 @@
     // Élément affichant la branche source (pour extraire le ticket si besoin)
     const BRANCH_SOURCE_SELECTOR = '.branch-selector code';
 
+    const BRANCH_PATHS = [{ d: 'M416,160a64,64,0,1,0-96.27,55.24c-2.29,29.08-20.08,37-75,48.42-17.76,3.68-35.93,7.45-52.71,13.93V151.39a64,64,0,1,0-64,0V360.61a64,64,0,1,0,64.42.24c2.39-18,16-24.33,65.26-34.52,27.43-5.67,55.78-11.54,79.78-26.95,29-18.58,44.53-46.78,46.36-83.89A64,64,0,0,0,416,160ZM160,64a32,32,0,1,1-32,32A32,32,0,0,1,160,64Zm0,384a32,32,0,1,1,32-32A32,32,0,0,1,160,448ZM352,192a32,32,0,1,1,32-32A32,32,0,0,1,352,192Z' }]
+    const COMMIT_PATHS = [{ d: 'M11.8759,8.99237 C11.4346,10.7215 9.86658,12 8,12 C6.13342,12 4.56545,10.7215 4.12406,8.99238 C4.08342,8.99741 4.04201,9 4,9 L1,9 C0.447715,9 0,8.55228 0,8 C0,7.44771 0.447715,7 1,7 L4,7 C4.04201,7 4.08342,7.00259 4.12406,7.00762 C4.56545,5.27853 6.13342,4 8,4 C9.86658,4 11.4346,5.27853 11.8759,7.00763 C11.9166,7.00259 11.958,7 12,7 L15,7 C15.5523,7 16,7.44772 16,8 C16,8.55228 15.5523,9 15,9 L12,9 C11.958,9 11.9166,8.9974 11.8759,8.99237 Z M8,10 C9.10457,10 10,9.10457 10,8 C10,6.89543 9.10457,6 8,6 C6.89543,6 6,6.89543 6,8 C6,9.10457 6.89543,10 8,10 Z' }]
     // ==========================================================================
-    // LOGIQUE MÉTIER (Extraction & Parsing)
+    // LOGIQUE MÉTY (Extraction & Parsing)
     // ==========================================================================
 
     /**
@@ -126,7 +128,9 @@
         }
 
         // Récupération des options utilisateur depuis le panneau
-        const source = document.querySelector('input[name="mr-source"]:checked').value;
+        const selectedRow = document.querySelector('.mr-option-row.selected');
+        if (!selectedRow) return; // Should not happen
+        const source = selectedRow.dataset.value;
 
         let finalTicket = "";
 
@@ -184,7 +188,14 @@
             const regex = new RegExp(
                 `^${ticketPattern.source}\\s*${typePattern.source}${scopePattern.source}${separatorPattern.source}${descriptionPattern.source}`
             );
-            const match = originalTitle.match(regex);
+            let match = originalTitle.match(regex);
+
+            // FALLBACK: Si le titre extrait de la description ne matche pas,
+            // on essaie avec le titre actuel de l'input.
+            if (!match) {
+                originalTitle = inputTitle.value;
+                match = originalTitle.match(regex);
+            }
 
 
             if (match) {
@@ -201,7 +212,7 @@
                 // Formatage des scopes
                 let formattedScopes = "";
                 if (scopeRaw) {
-                    if(scopePattern.source === "") {
+                    if (scopePattern.source === "") {
                         formattedScopes = getScopesFromInput(inputTitle.value);
                     } else {
                         formattedScopes = scopeRaw.split(',').map(s => `[${s.trim()}]`).join('');
@@ -225,7 +236,7 @@
 
                 let label = document.querySelector('label[for="merge_request_title"]');
                 let errorText = "Le titre n\'est pas dans le format attendu pour le formater";
-                if(!label.innerText.includes(errorText)) {
+                if (!label.innerText.includes(errorText)) {
                     const errorSpan = document.createElement('span');
                     errorSpan.className = 'error-span';
                     errorSpan.style.color = 'red';
@@ -251,9 +262,9 @@
         const ticket = getTicketFromBranch();
         let labelText = "";
         if (ticket) {
-            labelText = `Changer desc pour "Issues ${ticket.replace(/\[|\]/g, '')}"`;
+            labelText = `Changer la description pour "Issues ${ticket.replace(/\[|\]/g, '')}"`;
         } else {
-            labelText = `Changer desc pour "Issues TC-XXXXX"`;
+            labelText = `Changer la description pour "Issues TC-XXXXX"`;
         }
 
         const panel = document.createElement('div');
@@ -265,12 +276,18 @@
 
         const headerText = document.createElement('span');
         headerText.className = 'header-text';
-        headerText.textContent = '🪄 MR Helper';
+        headerText.textContent = 'Merge Request Helper';
 
         const toggleIcon = document.createElement('span');
         toggleIcon.className = 'toggle-icon';
         toggleIcon.textContent = '−';
 
+        const logoImg = document.createElement('img');
+        logoImg.src = chrome.runtime.getURL('src/laitquipe.png');
+        logoImg.className = 'minimized-icon';
+        logoImg.style.display = 'none'; // Caché par défaut
+
+        header.appendChild(logoImg);
         header.appendChild(headerText);
         header.appendChild(toggleIcon);
         panel.appendChild(header);
@@ -280,27 +297,60 @@
         content.id = 'mr-helper-content';
 
         // Radio Group
-        const radioGroup = document.createElement('div');
-        radioGroup.className = 'mr-radio-group';
+        // Options Group
+        const optionsGroup = document.createElement('div');
+        optionsGroup.className = 'mr-options-group';
 
-        function createRadio(value, text, checked = false) {
-            const label = document.createElement('label');
-            label.className = 'mr-radio-label';
+        function createOptionRow(value, text, svgPaths, selected = false) {
+            const row = document.createElement('div');
+            row.className = 'mr-option-row';
+            if (selected) row.classList.add('selected');
+            row.dataset.value = value;
 
-            const input = document.createElement('input');
-            input.type = 'radio';
-            input.name = 'mr-source';
-            input.value = value;
-            if (checked) input.checked = true;
+            // SVG Icon
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("viewBox", "0 0 512 512"); // Default viewBox, might need adjustment based on path
+            // Note: The paths provided have different viewBoxes potentially. 
+            // Commit icon seems to be 16x16 based on previous file content, Branch is 512x512.
+            // Let's adjust viewBox based on value or standardize.
 
-            label.appendChild(input);
-            label.appendChild(document.createTextNode(text));
-            return label;
+            if (value === 'input') {
+                svg.setAttribute("viewBox", "0 0 16 16");
+            } else {
+                svg.setAttribute("viewBox", "0 0 512 512");
+            }
+
+            svg.classList.add('option-icon');
+
+            svgPaths.forEach(pathData => {
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("d", pathData.d);
+                // Add fill if needed, or handle in CSS
+                path.setAttribute("fill", "currentColor");
+                svg.appendChild(path);
+            });
+
+            const label = document.createElement('span');
+            label.className = 'option-label';
+            label.textContent = text;
+
+            row.appendChild(svg);
+            row.appendChild(label);
+
+            // Click Event
+            row.addEventListener('click', () => {
+                // Deselect all
+                optionsGroup.querySelectorAll('.mr-option-row').forEach(r => r.classList.remove('selected'));
+                // Select clicked
+                row.classList.add('selected');
+            });
+
+            return row;
         }
 
-        radioGroup.appendChild(createRadio('input', 'Titre depuis Commit', true));
-        radioGroup.appendChild(createRadio('branch', 'Titre depuis Branche'));
-        content.appendChild(radioGroup);
+        optionsGroup.appendChild(createOptionRow('input', 'Récupérer la description depuis le commit', COMMIT_PATHS, true));
+        optionsGroup.appendChild(createOptionRow('branch', 'Récupérer le titre depuis le nom de la branche', BRANCH_PATHS));
+        content.appendChild(optionsGroup);
 
         // Apply Button
         const applyBtn = document.createElement('button');
@@ -319,12 +369,22 @@
         checkbox.id = 'mr-fill-desc';
         checkbox.checked = true;
 
-        const checkboxText = document.createElement('span');
-        checkboxText.id = 'mr-desc-label-text';
-        checkboxText.textContent = labelText;
+        const textContainer = document.createElement('div');
+        textContainer.className = 'mr-checkbox-text-container';
+
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'mr-checkbox-title';
+        titleSpan.textContent = "Mettre à jour la description";
+
+        const subtitleSpan = document.createElement('span');
+        subtitleSpan.className = 'mr-checkbox-subtitle';
+        subtitleSpan.textContent = ticket ? `Issues ${ticket.replace(/\[|\]/g, '')}` : "Issues TC-XXXXX";
+
+        textContainer.appendChild(titleSpan);
+        textContainer.appendChild(subtitleSpan);
 
         checkboxLabel.appendChild(checkbox);
-        checkboxLabel.appendChild(checkboxText);
+        checkboxLabel.appendChild(textContainer);
         content.appendChild(checkboxLabel);
 
         panel.appendChild(content);

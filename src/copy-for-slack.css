@@ -1,0 +1,74 @@
+/* Container modifications */
+.js-issuable-actions.mr-copy-modified {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+/* Slack Icon */
+.slack-icon {
+    vertical-align: text-bottom;
+    margin-right: 8px;
+}
+
+/* Main Wrapper */
+#mr-copy-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+/* Input Row */
+.mr-copy-input-row {
+    gap: 5px;
+    justify-content: flex-end;
+}
+
+/* Input Wrapper */
+.mr-copy-input-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Input */
+#mr-copy-mention-input {
+    min-height: unset;
+}
+
+/* History List */
+#mr-copy-mention-list {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+    background: #222;
+    border: 1px solid #555;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    flex-direction: column;
+    margin-top: 2px;
+}
+
+#mr-copy-mention-list.visible {
+    display: flex;
+}
+
+/* History Item */
+.mr-copy-history-item {
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #e0e0e0;
+    background: #222;
+}
+
+.mr-copy-history-item:not(:last-child) {
+    border-bottom: 1px solid #444;
+}
+
+.mr-copy-history-item:hover {
+    background: #444;
+}

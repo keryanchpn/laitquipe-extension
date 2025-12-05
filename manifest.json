@@ -1,64 +1,74 @@
 {
-    "manifest_version": 3,
-    "name": "GitLab Power Tools By Keryanchpn",
-    "version": "1.5",
-    "description": "Améliorations pour GitLab : Copie Slack et Nommage MR",
-    "permissions": [
-        "tabs"
-    ],
-    "host_permissions": [
-        "*://*.lequipe.fr/*",
-        "*://*.lequipe.tools/*",
-        "*://*.dev-candidate.lequipe.eu/*",
-        "*://gitlab.lequipe.net/*"
-    ],
-    "icons": {
-        "16": "icons/laitquipe-16.png",
-        "48": "icons/laitquipe-48.png",
-        "128": "icons/laitquipe-128.png"
-    },
-    "action": {
-        "default_popup": "src/popup.html",
-        "default_icon": {
-            "16": "icons/laitquipe-16.png",
-            "48": "icons/laitquipe-48.png",
-            "128": "icons/laitquipe-128.png"
-        }
-    },
-    "content_scripts": [
-        {
-            "matches": [
-                "https://gitlab.lequipe.net/*/merge_requests/*"
-            ],
-            "exclude_matches": [
-                "https://gitlab.lequipe.net/*/merge_requests/new"
-            ],
-            "js": [
-                "src/copy-for-slack.js"
-            ]
-        },
-        {
-            "matches": [
-                "https://gitlab.lequipe.net/*"
-            ],
-            "js": [
-                "src/nommage-mr.js"
-            ],
-            "css": [
-                "src/styles.css"
-            ]
-        }
-    ],
-    "browser_specific_settings": {
-        "gecko": {
-            "id": "gitlab-tools@lequipe.fr",
-            "strict_min_version": "142.0",
-            "data_collection_permissions": {
-                "required": [
-                    "none"
-                ]
-            },
-            "update_url": "https://raw.githubusercontent.com/keryanchpn/gitlab-browser-releases/main/updates.json"
-        }
+  "manifest_version": 3,
+  "name": "Lait'quipe Power Tools",
+  "version": "1.8",
+  "description": "Boostez votre productivité grâce à Lait'quipe Power Tools",
+  "permissions": [
+    "tabs"
+  ],
+  "host_permissions": [
+    "*://*.lequipe.fr/*",
+    "*://*.lequipe.tools/*",
+    "*://*.dev-candidate.lequipe.eu/*",
+    "*://gitlab.lequipe.net/*"
+  ],
+  "icons": {
+    "16": "icons/laitquipe-16.png",
+    "48": "icons/laitquipe-48.png",
+    "128": "icons/laitquipe-128.png"
+  },
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "16": "icons/laitquipe-16.png",
+      "48": "icons/laitquipe-48.png",
+      "128": "icons/laitquipe-128.png"
     }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://gitlab.lequipe.net/*/merge_requests/*"
+      ],
+      "exclude_matches": [
+        "https://gitlab.lequipe.net/*/merge_requests/new"
+      ],
+      "js": [
+        "src/copy-for-slack.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://gitlab.lequipe.net/*"
+      ],
+      "js": [
+        "src/nommage-mr.js"
+      ],
+      "css": [
+        "src/styles.css"
+      ]
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "laitquipe@laitquipe.fr",
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      },
+      "update_url": "https://raw.githubusercontent.com/keryanchpn/laitquipe-extension-releases/main/updates.json"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/laitquipe.png"
+      ],
+      "matches": [
+        "https://gitlab.lequipe.net/*"
+      ]
+    }
+  ]
 }
